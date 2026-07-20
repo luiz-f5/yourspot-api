@@ -15,6 +15,6 @@ export class AuthService {
     if (!user) throw new Error('Credenciais inválidas');
 
     const secret = process.env.AUTH_SECRET || 'fallbackSecret';
-    return jwt.sign({ email }, secret, { expiresIn: '1h' });
+    return jwt.sign({ id: user.id, email: user.email }, secret, { expiresIn: '1h' });
   }
 }
