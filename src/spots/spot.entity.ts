@@ -12,8 +12,8 @@ export class Spot {
   @Column({ length: 255 })
   description!: string;
 
-  @Column({ type: 'longblob', nullable: true })
-  image?: Buffer;
+  @Column({ nullable: true })
+  imagePath?: string;
 
   @Column('float')
   latitude!: number;
