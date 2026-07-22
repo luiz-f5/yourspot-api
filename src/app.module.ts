@@ -7,15 +7,18 @@ import { ContactsModule } from './contacts/contacts.module';
 import { readFileSync } from 'fs';
 import getPass from './aws-sdk';
 
-const pem = './global-bundle.pem'
+const pem = './global-bundle.pem';
 
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
       useFactory: async () => {
-      const password = await getPass() 
+        const mode = process.env.DB_MODE || 'local';
+
+        if (mode === 'external') {
+          const password = await getPass();
           return {
-            type: process.env.DB_TYPE as any, 
+            type: process.env.DB_TYPE as any,
             host: process.env.DB_HOST,
             port: parseInt(process.env.DB_PORT || '3306', 10),
             username: process.env.DB_USER,
@@ -24,23 +27,37 @@ const pem = './global-bundle.pem'
             entities: [__dirname + '/**/*.entity{.ts,.js}'],
             synchronize: true,
             dropSchema: false,
-            ssl : true,
+            ssl: true,
             extra: {
-            ssl: {
-              rejectUnauthorized: false,
-              ca: readFileSync(pem),
-        }
-      },
+              ssl: {
+                rejectUnauthorized: false,
+                ca: readFileSync(pem),
+              },
+            },
             logging: 'all',
             logger: 'advanced-console',
-          }
-      }
-    }
-  ),
+          };
+        } else {
+          return {
+            type: process.env.DB_TYPE as any,
+            host: process.env.DB_HOST || 'localhost',
+            port: parseInt(process.env.DB_PORT || '3306', 10),
+            username: process.env.DB_USER,
+            password: process.env.DB_PASS,
+            database: process.env.DB_NAME,
+            entities: [__dirname + '/**/*.entity{.ts,.js}'],
+            synchronize: true,
+            dropSchema: false,
+            logging: 'all',
+            logger: 'advanced-console',
+          };
+        }
+      },
+    }),
     AuthModule,
     UsersModule,
     SpotsModule,
-    ContactsModule
+    ContactsModule,
   ],
 })
 export class AppModule {}
