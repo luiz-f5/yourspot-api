@@ -4,6 +4,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { SpotsModule } from './spots/spots.module';
 import { ContactsModule } from './contacts/contacts.module';
+import { HealthModule } from './health/health.module';
 import { readFileSync } from 'fs';
 import getPass from './aws-sdk';
 
@@ -58,6 +59,7 @@ const pem = './global-bundle.pem';
     UsersModule,
     SpotsModule,
     ContactsModule,
+    HealthModule
   ],
 })
 export class AppModule {}
