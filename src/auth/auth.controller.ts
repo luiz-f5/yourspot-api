@@ -1,5 +1,6 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import * as jwt from 'jsonwebtoken';
 
 @Controller('auth')
 export class AuthController {
@@ -13,6 +14,16 @@ export class AuthController {
   @Post('login')
   async login(@Body() body: { email: string; password: string }) {
     const { token, expiresIn } = await this.authService.login(body.email, body.password);
-    return { access_token: token, expires_in: expiresIn };
+    
+    const decoded = jwt.decode(token) as { exp: number };
+
+    const expirationDate = new Date(decoded.exp * 1000);
+
+    return { 
+      access_token: token, 
+      expiry_raw: expiresIn,
+      expiry_timestamp: expirationDate.getTime(), 
+      expiry_formatted_date: expirationDate.toLocaleString('pt-BR')
+    };
   }
 }
