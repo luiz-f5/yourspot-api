@@ -20,6 +20,5 @@ export default async function getPass() {
   const secretString = response.SecretString as string;
   const password = JSON.parse(secretString).password;
 
-  console.log(password)
   return password;
 }
